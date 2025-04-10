@@ -1,3 +1,3 @@
-l = ['print("hi")', 'print("bye")'];
-for i in l:
-    exec(i)
+import streamlit as st
+k = exec('st.write("hello")')
+print(type(k))

@@ -22,16 +22,17 @@ ChatPage = st.Page(
     icon="🤖",    
     title = "Chatbot"
 )
-ChatPage2 = st.Page(
-    page="pages/CB2.py",
-    icon="🤖",    
-    title = "Chatbot2"
+AboutPage = st.Page(
+    page="pages/About.py",
+    icon="👤",    
+    title = "About"
 )
 
 # Navigation Bar
 pg = st.navigation({
-    "DATA": [HomePage, StatsPage, ChatPage, ChatPage2],
-    "Tools": [PlotsPage]
+    "DATA": [HomePage, StatsPage, ChatPage],
+    "Tools": [PlotsPage],
+    "About": [AboutPage]
 }
 )
 
