@@ -1,0 +1,24 @@
+# Python bytecode
+__pycache__/
+*.py[cod]
+
+# Cache, exports, and output directories
+cache/
+exports/
+outputs/
+
+# VS Code settings (optional)
+.vscode/
+
+# System-specific files
+.DS_Store
+Thumbs.db
+
+# Virtual environments
+env/
+.venv/
+venv/
+
+# Logs or temp files
+*.log
+*.tmp
