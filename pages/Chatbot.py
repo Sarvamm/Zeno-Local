@@ -8,13 +8,21 @@ import plotly.graph_objects as go
 import traceback
 import io
 import contextlib
+import uuid
 
-# --- Recorder class to persist st calls ---
+# --- Recorder class to persist st calls with unique keys for plotly charts ---
 class StreamlitCallRecorder:
     def __init__(self):
         self.calls = []
+        self.chart_counter = 0  # Counter for generating unique keys
 
     def _record(self, method, *args, **kwargs):
+        # For plotly_chart, ensure a unique key is provided
+        if method == "plotly_chart" and "key" not in kwargs:
+            # Generate a unique key using chart counter
+            self.chart_counter += 1
+            kwargs["key"] = f"chart_{self.chart_counter}_{uuid.uuid4().hex[:8]}"
+        
         self.calls.append((method, args, kwargs))
 
     def write(self, *args, **kwargs): self._record("write", *args, **kwargs)
@@ -67,16 +75,16 @@ def execute(full_response):
 
 # --- Prompt builder ---
 def get_response_stream(user_prompt):
-    prompt = f'''You are a data analyst assistant, working with a DataFrame called df with the following columns:
+    prompt = f'''You are a data analyst assistant working on a with the following columns:
 {df.columns.tolist()}
-
+The data frame is loaded in the variable df.
+You will be provided a question related to the data frame.
+Your task is to answer the question using Python code.
 First decide whether the question requires a plot or not.
 - If yes, plot it using Plotly Express in Streamlit.
 - If no, use pandas methods and display answers using st.write().
-
 Use single quotes for st.write().
 Respond only with executable Python code blocks that can run inside exec().
-
 Question:
 {user_prompt}
 '''
@@ -91,12 +99,34 @@ Question:
 if "df" in st.session_state and st.session_state.df is not None:
     df = st.session_state.df
     st.title("💬 Chatbot")
+    
+    # Initialize button_question in session state if it doesn't exist
+    if "button_question" not in st.session_state:
+        st.session_state.button_question = None
+
+    if st.session_state.questions is None:
+        from Functions import question
+        st.session_state.questions = question()
+        
+    questions = eval(st.session_state.questions)[:3]
+    
+    # Create buttons that set the session state variable
+    c1, c2, c3 = st.columns(3)
+    if c1.button(questions[0]):
+        st.session_state.button_question = questions[0]
+        st.rerun()
+    if c2.button(questions[1]):
+        st.session_state.button_question = questions[1]
+        st.rerun()
+    if c3.button(questions[2]):
+        st.session_state.button_question = questions[2]
+        st.rerun()
 
     if "messages" not in st.session_state:
         st.session_state["messages"] = []
 
     # Show past messages
-    for msg in st.session_state["messages"]:
+    for msg_idx, msg in enumerate(st.session_state["messages"]):
         with st.chat_message(msg["role"]):
             if msg["role"] == "user":
                 st.markdown(msg["content"])
@@ -107,19 +137,33 @@ if "df" in st.session_state and st.session_state.df is not None:
                     st.text("🧾 Output:")
                     st.code(msg["output"])
                 if msg.get("st_calls"):
-                    for method, args, kwargs in msg["st_calls"]:
+                    for call_idx, (method, args, kwargs) in enumerate(msg["st_calls"]):
                         if hasattr(st, method):
-                            getattr(st, method)(*args, **kwargs)
+                            # Add unique key for plotly_chart if not present
+                            if method == "plotly_chart" and "key" not in kwargs:
+                                kwargs["key"] = f"msg_{msg_idx}_call_{call_idx}"
+                            try:
+                                getattr(st, method)(*args, **kwargs)
+                            except Exception as e:
+                                st.error(f"Error executing {method}: {str(e)}")
                 if msg.get("error"):
                     st.error(msg["error"])
 
-    # Handle new user input
-    if user_input := st.chat_input("Start typing..."):
+    # Get user input from chat input and always show the chat input
+    user_input = st.chat_input("Start typing...")
+    
+    # Check if we have input from a button
+    if st.session_state.button_question:
+        user_input = st.session_state.button_question
+        st.session_state.button_question = None  # Reset after using
+    
+    # Process input if available
+    if user_input:
         st.session_state["messages"].append({"role": "user", "content": user_input})
 
         with st.chat_message("user"):
             st.markdown(user_input)
-
+        
         with st.chat_message("assistant"):
             response_container = st.empty()
             full_response = ""
@@ -136,9 +180,15 @@ if "df" in st.session_state and st.session_state.df is not None:
                 st.text("🧾 Output:")
                 st.markdown(output)
             if st_calls:
-                for method, args, kwargs in st_calls:
+                for call_idx, (method, args, kwargs) in enumerate(st_calls):
                     if hasattr(st, method):
-                        getattr(st, method)(*args, **kwargs)
+                        # Add additional unique key when showing in the UI
+                        if method == "plotly_chart" and "key" not in kwargs:
+                            kwargs["key"] = f"current_response_call_{call_idx}"
+                        try:
+                            getattr(st, method)(*args, **kwargs)
+                        except Exception as e:
+                            st.error(f"Error executing {method}: {str(e)}")
             if error:
                 st.error(error)
 
@@ -150,6 +200,21 @@ if "df" in st.session_state and st.session_state.df is not None:
                 "st_calls": st_calls,
                 "error": error
             })
-
 else:
+    st.markdown(f'''
+### 🤖 Chat with Your Data
+
+This chatbot lets you ask **natural language questions** about your dataset — and it replies with charts, insights, and Python code!
+
+#### ✅ What it can do:
+- Answer questions using pandas or visual plots
+- Auto-generate Plotly graphs
+- Show you the Python code behind every answer
+- Display output, errors, and Streamlit elements
+
+> **To begin:** Upload a CSV file on the main page or data overview tab.
+
+📁 *Once uploaded, come back here to start chatting with your data!*
+
+                ''')
     st.warning("Upload a file to get started.")

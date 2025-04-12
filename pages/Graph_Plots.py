@@ -130,4 +130,27 @@ if "df" in st.session_state and st.session_state.df is not None:
             mime="text/html"
         )
 else:
+    st.markdown(f'''
+                ### 📊 Interactive Graph Builder
+
+Create beautiful, customizable plots from your dataset — no coding required!
+
+#### 🎨 Supported Plots:
+- Scatter Plot
+- Line Plot
+- Bar Chart (Vertical/Horizontal)
+- Histogram
+- Box Plot
+- Correlation Heatmap
+- Pie Chart
+
+🛠️ Features:
+- Dynamic column selection
+- Plot customization options
+- Download your charts as HTML
+
+> **To get started:** Upload a CSV file on the main page or data overview tab.
+
+📁 *Once uploaded, return here to start visualizing!*
+''')
     st.warning("Upload a file to get started.")

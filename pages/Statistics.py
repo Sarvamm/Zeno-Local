@@ -1,81 +1,59 @@
 import streamlit as st
-import pandas as pd
-import numpy as np
 
-st.session_state['stats'] = False
-@st.cache_data
-def display_comprehensive_stats(df):
-    # Basic description statistics
-    st.markdown("## Descriptive Statistics")
-    st.write("### Basic Summary Statistics")
-    st.write(df.describe())
-    
-    # Detailed column-wise statistics
-    st.markdown("## Detailed Column Statistics")
-    
-    # Numeric columns analysis
-    numeric_cols = df.select_dtypes(include=[np.number]).columns
-    if len(numeric_cols) > 0:
-        st.markdown("### Numeric Columns Analysis")
-        
-        # Detailed numeric column stats
-        numeric_stats = pd.DataFrame({
-            'Unique Count': df[numeric_cols].nunique(),
-            'Missing Count': df[numeric_cols].isnull().sum(),
-            'Missing Percentage': (df[numeric_cols].isnull().sum() / len(df) * 100).round(2),
-            'Missing count': df.isnull().sum(),
-            'Mean': df[numeric_cols].mean(),
-            'Median': df[numeric_cols].median(),
-            'Standard Deviation': df[numeric_cols].std(),
-            'Skewness': df[numeric_cols].skew(),
-            'Kurtosis': df[numeric_cols].kurtosis(),
-            'Min': df[numeric_cols].min(),
-            'Max': df[numeric_cols].max(),
-            'Range': df[numeric_cols].max() - df[numeric_cols].min()
-        })
-        st.write(numeric_stats)
-        
-        # Correlation matrix for numeric columns
-        st.markdown("### Correlation Matrix")
-        correlation_matrix = df[numeric_cols].corr()
-        st.write(correlation_matrix)
-    
-    # Categorical columns analysis
-    categorical_cols = df.select_dtypes(include=['object', 'category']).columns
-    if len(categorical_cols) > 0:
-        st.markdown("### Categorical Columns Analysis")
-        
-        # Categorical column stats
-        categorical_stats = pd.DataFrame({
-            'Unique Count': df[categorical_cols].nunique(),
-            'Missing Count': df[categorical_cols].isnull().sum(),
-            'Missing Percentage': (df[categorical_cols].isnull().sum() / len(df) * 100).round(2),
-            'Most Frequent Value': df[categorical_cols].mode().iloc[0],
-            'Value Counts': df[categorical_cols].apply(lambda x: x.value_counts().to_dict())
-        })
-        st.write(categorical_stats)
-    
-    # Additional DataFrame-level information
-    st.markdown("## DataFrame Overview")
-    col1, col2 = st.columns(2)
-    
-    with col1:
-        st.markdown("### DataFrame Shape")
-        st.write(f"Rows: {df.shape[0]}")
-        st.write(f"Columns: {df.shape[1]}")
-    
-    with col2:
-        st.markdown("### Data Types")
-        st.write(df.dtypes)
-    
-    # Memory usage
-    st.markdown("### Memory Usage")
-    st.write(f"Total Memory: {df.memory_usage(deep=True).sum() / 1024**2:.2f} MB")
+
+if 'report' not in st.session_state:
+    st.session_state.report = None
+
+def generate_report(df):
+    if st.session_state.report is not None:
+        st_profile_report(st.session_state.report)
+    else:
+        st.session_state.report = df.profile_report()
+        st_profile_report(st.session_state.report)
+
+    st.session_state.report.to_file("outputs/report.html")
 
 
 if "df" in st.session_state and st.session_state.df is not None:
     df = st.session_state.df
-    st.markdown("## Statistics")
-    display_comprehensive_stats(df)
+    from ydata_profiling import ProfileReport
+    from streamlit_pandas_profiling import st_profile_report
+    from streamlit_extras.floating_button import floating_button
+    generate_report(df)
+    try:
+        @st.dialog("Download Report")
+        def download_report():
+            st.download_button(
+                label="Download Report",
+                data=open("outputs/report.html", "r+"),
+                file_name="report.html",
+                mime="text/html"
+            )
+
+    except Exception as e:
+        st.error(f"Error generating report: {e}")
+
+    if floating_button("Download Report", icon="📥"):
+        download_report()
+
 else:
+    st.markdown(f'''
+                ### 📋 Data Profiler
+
+Get a **detailed and automated report** of your dataset in just one click!
+
+#### 🔍 What you'll get:
+- Variable types & distributions
+- Missing value analysis
+- Correlations & duplicates
+- Interactive visualizations
+- Downloadable HTML report
+
+⚡ Powered by **YData Profiling** and built for **quick insights**.
+
+> **To begin:** Upload a CSV file on the main page or data overview tab.
+
+📁 *Once uploaded, come back here to generate your report!*
+
+                ''')
     st.warning("Upload a file to get started.")
