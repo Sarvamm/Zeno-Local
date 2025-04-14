@@ -54,7 +54,7 @@ If you want to customize visualizations yourself, use the dedicated graph plotte
 ###  Installation
 ```bash
 git clone https://github.com/sarvamm/DATARS---Automated-Data-Analysis.git
-cd datars
+cd DATARS---Automated-Data-Analysis
 pip install -r requirements.txt
 ```
 
