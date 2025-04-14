@@ -105,6 +105,12 @@ DATARS/
 
 ---
 
+## 📬 Contact
+ 
+🔗 [LinkedIn](https://www.linkedin.com/in/sarvamm) • [GitHub](https://github.com/sarvamm) • [Buy me a Coffee](https://buymeacoffee.com/astrayn) 
+
+---
+
 ##  License
 
 This project is licensed under the terms of the Non-Profit Open Software License version 3.0.
