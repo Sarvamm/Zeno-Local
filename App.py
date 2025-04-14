@@ -130,7 +130,7 @@ st.logo("assets/logo.png", size='medium')
 with st.sidebar:
     st.caption("Support me by clicking on this button 👇")
     button(username="astrayn", floating=False, width=221)
-    st.caption('0.0.2')
+    st.caption('0.0.3')
 
 
 pg.run()
