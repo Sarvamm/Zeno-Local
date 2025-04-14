@@ -5,7 +5,6 @@ __pycache__/
 # Cache, exports, and output directories
 cache/
 exports/
-outputs/report.html
 
 # VS Code settings (optional)
 .vscode/
