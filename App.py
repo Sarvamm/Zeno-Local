@@ -126,7 +126,7 @@ with st.sidebar:
             st.error(f"Failed to read file: {e}")
 
 
-st.logo("assets/logo.png", size='large')
+st.logo("assets/logo.png", size='medium')
 with st.sidebar:
     st.caption("Support me by clicking on this button 👇")
     button(username="astrayn", floating=False, width=221)

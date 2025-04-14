@@ -98,7 +98,7 @@ Question:
 # --- Main App ---
 if "df" in st.session_state and st.session_state.df is not None:
     df = st.session_state.df
-    st.title("💬 Chatbot")
+    st.title("Talk to TARS")
     
     # Initialize button_question in session state if it doesn't exist
     if "button_question" not in st.session_state:

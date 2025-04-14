@@ -106,8 +106,7 @@ st.markdown('<p class="subtitle">Data Science Student | AI Enthusiast</p>', unsa
 st.markdown('<div class="about-section">', unsafe_allow_html=True)
 st.markdown("""
 <p style="text-align: justify; text-align-last: center;">
-I'm a passionate data science student with a love for AI, machine learning, and building meaningful tech.  
-I enjoy turning complex datasets into clear, actionable insights.
+First year Data Science student specializing in AI and machine learning. Experienced in Python, SQL, and data visualization, with hands-on projects in predictive modeling and NLP. Constantly learning and exploring the field of intelligent systems. Open to discussions and collaboration!
 </p>
 """, unsafe_allow_html=True)
 st.markdown('</div>', unsafe_allow_html=True)
