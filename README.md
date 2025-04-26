@@ -53,8 +53,8 @@ If you want to customize visualizations yourself, use the dedicated graph plotte
 
 ###  Installation
 ```bash
-git clone https://github.com/sarvamm/DATARS---Automated-Data-Analysis.git
-cd DATARS---Automated-Data-Analysis
+git clone https://github.com/sarvamm/DATARS-AI.git
+cd DATARS-AI
 pip install -r requirements.txt
 ```
 
