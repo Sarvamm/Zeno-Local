@@ -1,6 +1,6 @@
-#  DATARS – Automated Data Analysis
+#  Zeno Local
 
-DATARS is a powerful and user-friendly Streamlit app that leverages local LLMs to understand, summarize, and visualize your dataset—all in a few clicks. Whether you're an analyst or a data science enthusiast, DATARS helps you interact with your data like never before.
+Zeno is a powerful and user-friendly Streamlit app that leverages local LLMs to understand, summarize, and visualize your dataset—all in a few clicks. Whether you're an analyst or a data science enthusiast, DATARS helps you interact with your data like never before.
 
 ---
 
